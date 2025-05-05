@@ -24,9 +24,9 @@
     // first check which cell has tokens = 0
     // if the selected cell has a token of value that is 0
     // Allow player to add their token to the box
-    const cell = board[row][column];
+    const cell = board[row][col];
     
-    if (cell.getValue === 0) {
+    if (cell.getValue() === 0) {
         cell.addToken(player);
         console.log(`player ${player} picked cell (${row}, ${col}`)
         return true;
