@@ -40,6 +40,8 @@
     // it runs through the entire 3x3 board. going through each row and associated column
     // then it checks whether each cell has a token applied to it and what token is applied
     // It then prints this map of the board for the player to see!
+    const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue()));
+    console.log(boardWithCellValues);
   };
 
   const resetBoard = function () {
