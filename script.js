@@ -3,7 +3,7 @@
 // 2. A function to reset the board back to it's original
 // 3. Know the current state of the board
 
-(function gameboard() {
+(function Gameboard() {
   const rows = 3;
   const columns = 3;
   board = [];
@@ -15,6 +15,9 @@
     }
   }
   console.log(board);
+
+  const getBoard = () => board; //prints the board to start the game
+
 
   const pickCell = function (row, col, player) {
     // player can select any of the 9 cells as long as they don't already have a token applied to it
@@ -43,14 +46,9 @@
     const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue()));
     console.log(boardWithCellValues);
   };
+  
 
-  const resetBoard = function () {
-    // goes through each call and checks if there is a token there.
-    // If there is a token, it removes the token.
-    // Does this motion of each cell until the entire board is clear
-  };
-
-  return { board };
+  return { getBoard, printBoard, pickCell };
 })();
 
 function Cell() {
