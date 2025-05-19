@@ -18,7 +18,6 @@
 
   const getBoard = () => board; //prints the board to start the game
 
-
   const pickCell = function (row, col, player) {
     // player can select any of the 9 cells as long as they don't already have a token applied to it
     // once cell is picked by player and depending on what token the player has.
@@ -28,14 +27,13 @@
     // if the selected cell has a token of value that is 0
     // Allow player to add their token to the box
     const cell = board[row][col];
-    
+
     if (cell.getValue() === 0) {
-        cell.addToken(player);
-        console.log(`player ${player} picked cell (${row}, ${col}`)
-        return true;
-    }
-    else {
-        console.log('You cannot enter make this move')
+      cell.addToken(player);
+      console.log(`player ${player} picked cell (${row}, ${col}`);
+      return true;
+    } else {
+      console.log("You cannot enter make this move");
     }
   };
 
@@ -43,10 +41,11 @@
     // it runs through the entire 3x3 board. going through each row and associated column
     // then it checks whether each cell has a token applied to it and what token is applied
     // It then prints this map of the board for the player to see!
-    const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue()));
+    const boardWithCellValues = board.map((row) =>
+      row.map((cell) => cell.getValue())
+    );
     console.log(boardWithCellValues);
   };
-  
 
   return { getBoard, printBoard, pickCell };
 })();
@@ -68,9 +67,13 @@ function Cell() {
   };
 }
 
-// Create Players
-function Players() {
-  // create an array of player 1 and player 2. Assign a token for each
+function GameController(
+  playerOneName = "Player One",
+  playerTwoName = "Player Two"
+) {
+
+// create an array of player 1 and player 2. Assign a token for each
+// 
   const players = [
     {
       name: "Player One",
@@ -81,13 +84,45 @@ function Players() {
       token: 2,
     },
   ];
-  return { players };
-}
-console.log(Players());
+  let activePlayer = players[0];
 
-function GameController() {
-  //player one selects an value in the array.
-  //Then Player 2 selects the value in the array.
+  const switchPlayerTurn = () => {
+    activePlayer = activePlayer === player[0] ? player[1] : player[0]
+  };
+
+  const getActivePlayer = () => activePlayer;
+
+  const printNewRound = () => {
+    board.printBoard();
+    console.log(`${getActivePlayer().name}'s turn`)
+  }
+
+  // First it's player one's turn, they must pick one of the cells
+  // Then it's player two's turn, they must pick a cell -> PUT THIS IN A PLAYROUND FUNCTION!
+
+    const playRound= function(move) {
+        move = int(input(`Player ${player}, enter your move, pick between 1 - 9: `))
+        if (move < 1 || move > 9) {
+            console.log("Invalid input. Choose a number from 1 to 9.")
+            const row = Math.floor((move-1)/3);
+            const col = (move-1) % 3;
+        }
+        board.pickCell(row, col, getActivePlayer().token);
+
+    }
+
+    switchPlayerTurn();
+    printNewRound();
+
+    return {
+        playRound, 
+        getActivePlayer
+    };
+
+
+
+  // player one selects an value in the array.
+  // Then Player 2 selects the value in the array.
   // this function has all the win states stored
   // As soon as one of the win states is achieved, the game is complete
   const rounds = 3;
