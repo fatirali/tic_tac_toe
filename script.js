@@ -3,10 +3,10 @@
 // 2. A function to reset the board back to it's original
 // 3. Know the current state of the board
 
-(function Gameboard() {
+function gameBoard() {
   const rows = 3;
   const columns = 3;
-  board = [];
+  const board = [];
 
   for (let i = 0; i < rows; i++) {
     board[i] = [];
@@ -30,10 +30,10 @@
 
     if (cell.getValue() === 0) {
       cell.addToken(player);
-      console.log(`player ${player} picked cell (${row}, ${col}`);
+      console.log(`player ${player} picked cell ${row}, ${col}`);
       return true;
     } else {
-      console.log("You cannot enter make this move");
+      console.log("You cannot make this move");
     }
   };
 
@@ -48,7 +48,7 @@
   };
 
   return { getBoard, printBoard, pickCell };
-})();
+}
 
 function Cell() {
   let value = 0;
@@ -71,9 +71,8 @@ function GameController(
   playerOneName = "Player One",
   playerTwoName = "Player Two"
 ) {
-
-// create an array of player 1 and player 2. Assign a token for each
-// 
+  // create an array of player 1 and player 2. Assign a token for each
+  //
   const players = [
     {
       name: "Player One",
@@ -86,134 +85,121 @@ function GameController(
   ];
   let activePlayer = players[0];
 
+  let gameOver = false;
+
+  const board = gameBoard();
+
   const switchPlayerTurn = () => {
-    activePlayer = activePlayer === player[0] ? player[1] : player[0]
+    activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
+
+  const isGameOver = () => gameOver;
 
   const getActivePlayer = () => activePlayer;
 
   const printNewRound = () => {
     board.printBoard();
-    console.log(`${getActivePlayer().name}'s turn`)
-  }
+    console.log(`${getActivePlayer().name}'s turn`);
+  };
 
-  // First it's player one's turn, they must pick one of the cells
-  // Then it's player two's turn, they must pick a cell -> PUT THIS IN A PLAYROUND FUNCTION!
+  const playRound = function () {
+    if (gameOver) {
+        return
+    };
 
-    const playRound= function(move) {
-        move = int(input(`Player ${player}, enter your move, pick between 1 - 9: `))
-        if (move < 1 || move > 9) {
-            console.log("Invalid input. Choose a number from 1 to 9.")
-            const row = Math.floor((move-1)/3);
-            const col = (move-1) % 3;
-        }
-        board.pickCell(row, col, getActivePlayer().token);
+    validMove = false;
 
+    while (!validMove) {
+      let move = parseInt(
+        prompt(
+          `Player ${
+            getActivePlayer().name
+          }, enter your move, pick between 1 - 9: `
+        )
+      );
+      if (move < 1 || move > 9) {
+        console.log("Invalid input. Choose a number from 1 to 9.");
+        return;
+      }
+      const row = Math.floor((move - 1) / 3);
+      const col = (move - 1) % 3;
+      const success = board.pickCell(row, col, getActivePlayer().token);
+
+      if (!success) {
+        console.log("Not a Valid Move. Pick Another Move");
+        continue;
+      }
+      validMove = true;
+    }
+
+    const winner = checkWinner(board.getBoard());
+    // console.log(winner);
+    if (winner === 1 || winner === 2) {
+      console.log(`player ${winner} wins!`);
+      board.printBoard();
+      gameOver=true;
+      return;
+    }
+    if (isDraw(board.getBoard())) {
+      board.printBoard();
+      console.log("it's a draw!");
+      gameOver=true;
+      return;
     }
 
     switchPlayerTurn();
     printNewRound();
+  };
 
-    return {
-        playRound, 
-        getActivePlayer
-    };
-
-
-
-  // player one selects an value in the array.
-  // Then Player 2 selects the value in the array.
-  // this function has all the win states stored
-  // As soon as one of the win states is achieved, the game is complete
-  const rounds = 3;
-  const turns = 9;
-  // First, the player enters their of their name
-  // Then the game begins and player 1 selects a spot on the gameboard
-  for (i = 0; i < rounds; i++) {
-    function playRound() {
-      const playerOne = prompt("Please enter your name, Player 1");
-      const playerTwo = prompt("Please enter your name, Player 2");
-      console.log("Player 1, please enter your selection");
-      //Player must pick a valid token
-    }
-  }
-  // Add Cell and create a map representation for the console.
-
-  // as long as the following array locations have the same non null token value,
-  // the game is won by the player based one which token value have achieved
-  // the correct location
-  // [[1, 1, 1],
-  //  [2, 2, 1],
-  //  [1, 2. 2]]
-  //
   function checkWinner(board) {
     // check rows
-    for (i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       if (
-        board[i][0] !== 0 &&
-        board[i][0] === board[i][1] &&
-        board[i][0] === board[i][2]
+        board[i][0].getValue() !== 0 &&
+        board[i][0].getValue() === board[i][1].getValue() &&
+        board[i][0].getValue() === board[i][2].getValue()
       )
-        return board[i][0];
+        return board[i][0].getValue();
     }
     //check columns
-    for (j = 0; j < 3; j++) {
+    for (let j = 0; j < 3; j++) {
       if (
-        board[0][j] !== 0 &&
-        board[0][j] === board[1][j] &&
-        board[0][j] === board[2][j]
+        board[0][j].getValue() !== 0 &&
+        board[0][j].getValue() === board[1][j].getValue() &&
+        board[0][j].getValue() === board[2][j].getValue()
       )
-        return board[0][j];
+        return board[0][j].getValue();
     }
     // check diagonals
     if (
-      board[0][0] !== 0 &&
-      board[0][0] === board[1][1] &&
-      board[0][0] === board[2][2]
+      board[0][0].getValue() !== 0 &&
+      board[0][0].getValue() === board[1][1].getValue() &&
+      board[0][0].getValue() === board[2][2].getValue()
     )
-      return board[0][0];
+      return board[0][0].getValue();
     else if (
-      board[0][2] !== 0 &&
-      board[0][2] === board[1][1] &&
-      board[0][2] === board[2][0]
+      board[0][2].getValue() !== 0 &&
+      board[0][2].getValue() === board[1][1].getValue() &&
+      board[0][2].getValue() === board[2][0].getValue()
     )
-      return board[0][2];
+      return board[0][2].getValue();
   }
   // check draw - Draw board is full
   // if all board options have either a value of X(1) or O(2)
   // got through each row and each column, check if the value is null
   // if all values are not null then the game is a draw!
 
-  for (let i = 0; i < 3; i++) {
-    // go through every row
-    for (let j = 0; j < 3; j++) {
-      // for each column in every row
-      board[i][j] !== 0; // Goes through each board cell and checks if any value is 0 or null
-    }
+  function isDraw(board) {
+    return board.every((row) => row.every((cell) => cell.getValue() !== 0));
   }
+
+  return {
+    playRound,
+    getActivePlayer,
+    isGameOver
+  };
 }
-
-// Create a Cell function, this function should be able to have full
-// contol over functionality of each cell. Which is a section of the tictactoe board
-// Here are what each of the cell token's mean
-// 0: This cell has no token
-// 1: This cell has Player 1's Token
-// 2: This call has Player 2's Token
-
-// function Book(author, title, pages, read) {
-//     if (!new.target) {
-//         throw Error("You must use the 'new' operator to call the constructor");
-//       }
-//     this.author = author;
-//     this.title = title;
-//     this.pages = pages;
-//     this.read = read;
-
-//     this.bookInfo = function () {
-//         return `${author}, ${title}, ${pages}, ${read}`;
-//     }
-// }
-
-// const theHobbit = new Book('Tolken', 'The Hobbit', 297, 'yes')
-
-// console.log(theHobbit.bookInfo());
+const game = GameController();
+while (!game.isGameOver()) {
+  game.playRound();
+};
