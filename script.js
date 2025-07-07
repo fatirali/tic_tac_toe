@@ -105,16 +105,15 @@ function GameController(
 
   const makeMove = function (row, col) {
     if (gameOver) {
-      return false;;
+      return false;
     }
-    
+
     const success = board.pickCell(row, col, getActivePlayer().token);
 
     if (!success) {
       console.log("Not a Valid Move. Pick Another Move");
       return false;
     }
-  
 
     // validMove = false;
 
@@ -139,7 +138,6 @@ function GameController(
     //     continue;
     //   }
     //   validMove = true;
-    
 
     const winner = checkWinner(board.getBoard());
     // console.log(winner);
@@ -159,7 +157,7 @@ function GameController(
     switchPlayerTurn();
     printNewRound();
     return true;
-  }
+  };
 
   function checkWinner(board) {
     // check rows
@@ -209,15 +207,16 @@ function GameController(
     isGameOver,
   };
 }
-const boardModule = gameBoard();
-const game = GameController(boardModule);
+let boardModule = gameBoard();
+let game = GameController(boardModule);
 // while (!game.isGameOver()) {
 //   game.makeMove();
 // }
 
 const DisplayController = (function () {
   const boardContainer = document.querySelector("#gameBoard");
-  let boardActive = false; 
+  let boardActive = false;
+  const startButton = document.getElementById("start");
 
   function renderBoard(board) {
     boardContainer.innerHTML = "";
@@ -250,12 +249,28 @@ const DisplayController = (function () {
       }
     }
   }
+  function startNewGame() {
+    if (boardActive = false) {
+      boardActive = true;
+      console.log("board is active")
+      DisplayController.renderBoard(boardModule.getBoard());
+    }
+    if (boardActive = true) {
+
+      boardModule = gameBoard();      
+      game = GameController(boardModule);
+      DisplayController.renderBoard(boardModule.getBoard());
+
+    }
+
+  }
   boardContainer.addEventListener("click", handleBoardClick);
-  
-  return { renderBoard };
+  startButton.addEventListener("click", startNewGame);
+
+  return { renderBoard, handleBoardClick, startNewGame };
 })();
 
-DisplayController.renderBoard(boardModule.getBoard());
+// DisplayController.renderBoard(boardModule.getBoard());
 
 // const ticTacToeBoard = [
 //     ['o', 'o', 'o'],
