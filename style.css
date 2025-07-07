@@ -1,0 +1,37 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+#gameBoard {
+    display: grid;
+    grid-template-rows: repeat(3, 100px);
+    grid-template-columns: repeat(3, 100px);
+    color: aqua;
+}
+
+#gameBoard div {
+    border: 1px solid aqua;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+}
+
+#start {
+    background-color: aqua;
+    color: black;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 20px auto;
+    display: block;
+    transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+#start:hover {
+    background-color: #00cccc;
+    color: white;
+    transform: scale(1.05);
+}

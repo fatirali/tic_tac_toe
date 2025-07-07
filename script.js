@@ -68,26 +68,27 @@ function Cell() {
 }
 
 function GameController(
-  playerOneName = "Player One",
-  playerTwoName = "Player Two"
+  boardModule
+  //   playerOneName = "Player One",
+  //   playerTwoName = "Player Two"
 ) {
   // create an array of player 1 and player 2. Assign a token for each
   //
   const players = [
     {
       name: "Player One",
-      token: 1,
+      token: "X",
     },
     {
       name: "Player Two",
-      token: 2,
+      token: "O",
     },
   ];
   let activePlayer = players[0];
 
   let gameOver = false;
 
-  const board = gameBoard();
+  const board = boardModule;
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -102,54 +103,63 @@ function GameController(
     console.log(`${getActivePlayer().name}'s turn`);
   };
 
-  const playRound = function () {
+  const makeMove = function (row, col) {
     if (gameOver) {
-        return
-    };
-
-    validMove = false;
-
-    while (!validMove) {
-      let move = parseInt(
-        prompt(
-          `Player ${
-            getActivePlayer().name
-          }, enter your move, pick between 1 - 9: `
-        )
-      );
-      if (move < 1 || move > 9) {
-        console.log("Invalid input. Choose a number from 1 to 9.");
-        return;
-      }
-      const row = Math.floor((move - 1) / 3);
-      const col = (move - 1) % 3;
-      const success = board.pickCell(row, col, getActivePlayer().token);
-
-      if (!success) {
-        console.log("Not a Valid Move. Pick Another Move");
-        continue;
-      }
-      validMove = true;
+      return false;;
     }
+    
+    const success = board.pickCell(row, col, getActivePlayer().token);
+
+    if (!success) {
+      console.log("Not a Valid Move. Pick Another Move");
+      return false;
+    }
+  
+
+    // validMove = false;
+
+    // while (!validMove) {
+    //   let move = parseInt(
+    //     prompt(
+    //       `Player ${
+    //         getActivePlayer().name
+    //       }, enter your move, pick between 1 - 9: `
+    //     )
+    //   );
+    //   if (move < 1 || move > 9) {
+    //     console.log("Invalid input. Choose a number from 1 to 9.");
+    //     return;
+    //   }
+    //   const row = Math.floor((move - 1) / 3);
+    //   const col = (move - 1) % 3;
+    //   const success = board.pickCell(row, col, getActivePlayer().token);
+
+    //   if (!success) {
+    //     console.log("Not a Valid Move. Pick Another Move");
+    //     continue;
+    //   }
+    //   validMove = true;
+    
 
     const winner = checkWinner(board.getBoard());
     // console.log(winner);
-    if (winner === 1 || winner === 2) {
+    if (winner === "X" || winner === "O") {
       console.log(`player ${winner} wins!`);
       board.printBoard();
-      gameOver=true;
-      return;
+      gameOver = true;
+      return true;
     }
     if (isDraw(board.getBoard())) {
       board.printBoard();
       console.log("it's a draw!");
-      gameOver=true;
-      return;
+      gameOver = true;
+      return true;
     }
 
     switchPlayerTurn();
     printNewRound();
-  };
+    return true;
+  }
 
   function checkWinner(board) {
     // check rows
@@ -194,12 +204,76 @@ function GameController(
   }
 
   return {
-    playRound,
+    makeMove,
     getActivePlayer,
-    isGameOver
+    isGameOver,
   };
 }
-const game = GameController();
-while (!game.isGameOver()) {
-  game.playRound();
-};
+const boardModule = gameBoard();
+const game = GameController(boardModule);
+// while (!game.isGameOver()) {
+//   game.makeMove();
+// }
+
+const DisplayController = (function () {
+  const boardContainer = document.querySelector("#gameBoard");
+  let boardActive = false; 
+
+  function renderBoard(board) {
+    boardContainer.innerHTML = "";
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        const createDiv = document.createElement("div");
+        createDiv.setAttribute("data-row", i);
+        createDiv.setAttribute("data-column", j);
+        createDiv.textContent = board[i][j].getValue();
+        if (board[i][j].getValue() === 0) {
+          createDiv.textContent = "";
+        }
+        boardContainer.appendChild(createDiv);
+      }
+    }
+  }
+
+  function handleBoardClick(event) {
+    clickedCell = event.target;
+    if (
+      clickedCell.dataset.row !== undefined &&
+      clickedCell.dataset.column !== undefined
+    ) {
+      const row = parseInt(clickedCell.dataset.row);
+      const column = parseInt(clickedCell.dataset.column);
+      const moveSuccessful = game.makeMove(row, column);
+
+      if (moveSuccessful) {
+        renderBoard(boardModule.getBoard());
+      }
+    }
+  }
+  boardContainer.addEventListener("click", handleBoardClick);
+  
+  return { renderBoard };
+})();
+
+DisplayController.renderBoard(boardModule.getBoard());
+
+// const ticTacToeBoard = [
+//     ['o', 'o', 'o'],
+//     ['x', 'x', 'x'],
+//     ['x', 'x', 'x'],
+//   ];
+//   function renderBoard(board) {
+//     boardContainer = document.getElementById('gameBoard');
+
+//     for (let i = 0; i < board.length; i++) {
+//       for (let j = 0; j < board[i].length; j++) {
+//         const createDiv = document.createElement('div');
+//         createDiv.setAttribute('data-row', i);
+//         createDiv.setAttribute('data-column', j);
+//         createDiv.textContent = board[i][j];
+//         boardContainer.appendChild(createDiv);
+//       }
+//     }
+//   }
+
+//   renderBoard(ticTacToeBoard);
