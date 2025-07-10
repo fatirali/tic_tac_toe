@@ -246,9 +246,29 @@ const DisplayController = (function () {
 
       if (moveSuccessful) {
         renderBoard(boardModule.getBoard());
+        DisplayController.displayMessage();
       }
     }
   }
+
+  function displayMessage () {
+    const inputPlayer1 = document.getElementById("player1").value
+    const inputPlayer2 = document.getElementById("player2").value
+    const display = document.getElementById("message")
+    const activePlayer = game.getActivePlayer()
+    if (activePlayer.token === "X") {
+      display.innerText = "It's " + inputPlayer1 +"'s turn"
+    }
+    if (activePlayer.token === "O") {
+      display.innerText = "It's " + inputPlayer2 + "'s turn"
+      console.log(inputPlayer2)
+    }
+
+    
+
+    // display.innerText = "Hi"
+  }
+
   function startNewGame() {
     if (boardActive = false) {
       boardActive = true;
@@ -260,14 +280,16 @@ const DisplayController = (function () {
       boardModule = gameBoard();      
       game = GameController(boardModule);
       DisplayController.renderBoard(boardModule.getBoard());
-
+      DisplayController.displayMessage();
     }
+    
+
 
   }
   boardContainer.addEventListener("click", handleBoardClick);
   startButton.addEventListener("click", startNewGame);
 
-  return { renderBoard, handleBoardClick, startNewGame };
+  return { renderBoard, handleBoardClick, startNewGame, displayMessage };
 })();
 
 // DisplayController.renderBoard(boardModule.getBoard());
