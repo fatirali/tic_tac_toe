@@ -67,6 +67,9 @@ function Cell() {
   };
 }
 
+// let winner = null;
+// let draw = null
+
 function GameController(
   boardModule
   //   playerOneName = "Player One",
@@ -102,6 +105,9 @@ function GameController(
     board.printBoard();
     console.log(`${getActivePlayer().name}'s turn`);
   };
+
+  let winner = null;
+  let draw = null;
 
   const makeMove = function (row, col) {
     if (gameOver) {
@@ -139,19 +145,20 @@ function GameController(
     //   }
     //   validMove = true;
 
-    const winner = checkWinner(board.getBoard());
+    winner = checkWinner(board.getBoard());
     // console.log(winner);
     if (winner === "X" || winner === "O") {
       console.log(`player ${winner} wins!`);
       board.printBoard();
       gameOver = true;
-      return true;
+      return winner;
     }
     if (isDraw(board.getBoard())) {
       board.printBoard();
       console.log("it's a draw!");
       gameOver = true;
-      return true;
+      draw = "draw";
+      return draw;
     }
 
     switchPlayerTurn();
@@ -205,6 +212,8 @@ function GameController(
     makeMove,
     getActivePlayer,
     isGameOver,
+    getWinner: () => winner,
+    getDraw: () => draw,
   };
 }
 let boardModule = gameBoard();
@@ -251,40 +260,43 @@ const DisplayController = (function () {
     }
   }
 
-  function displayMessage () {
-    const inputPlayer1 = document.getElementById("player1").value
-    const inputPlayer2 = document.getElementById("player2").value
-    const display = document.getElementById("message")
-    const activePlayer = game.getActivePlayer()
+  function displayMessage() {
+    const inputPlayer1 = document.getElementById("player1").value;
+    const inputPlayer2 = document.getElementById("player2").value;
+    const display = document.getElementById("message");
+    const activePlayer = game.getActivePlayer();
+    const result = game.getWinner();
+    const isDraw = game.getDraw();
     if (activePlayer.token === "X") {
-      display.innerText = "It's " + inputPlayer1 +"'s turn"
+      display.innerText = "It's " + inputPlayer1 + "'s turn";
     }
     if (activePlayer.token === "O") {
-      display.innerText = "It's " + inputPlayer2 + "'s turn"
-      console.log(inputPlayer2)
+      display.innerText = "It's " + inputPlayer2 + "'s turn";
     }
-
-    
-
-    // display.innerText = "Hi"
+    if (result === "X") {
+      display.innerText = inputPlayer1 + " is the winner!";
+    }
+    if (result === "O") {
+      display.innerText = inputPlayer2 + " is the winner!";
+    }
+    if (isDraw === "draw") {
+      display.innerText = "It's a draw";
+      // display.innerText = "Hi"
+    }
   }
 
   function startNewGame() {
-    if (boardActive = false) {
+    if ((boardActive = false)) {
       boardActive = true;
-      console.log("board is active")
+      console.log("board is active");
       DisplayController.renderBoard(boardModule.getBoard());
     }
-    if (boardActive = true) {
-
-      boardModule = gameBoard();      
+    if ((boardActive = true)) {
+      boardModule = gameBoard();
       game = GameController(boardModule);
       DisplayController.renderBoard(boardModule.getBoard());
       DisplayController.displayMessage();
     }
-    
-
-
   }
   boardContainer.addEventListener("click", handleBoardClick);
   startButton.addEventListener("click", startNewGame);
